@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         twww.setText(String.valueOf(utils.readFileData(fName)));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -95,7 +97,22 @@ public class MainActivity extends AppCompatActivity {
             try {
                 InputStream inputStream = utils.getContext().getContentResolver().openInputStream(data.getData());
                 Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                utils.showSnackbar(String.valueOf(bitmap.getWidth()) + "," + String.valueOf(bitmap.getHeight()));
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.tableLayoutt);
+                if(bitmap.getWidth() == 8 && bitmap.getHeight() == 8) {
+                    for(int y = 0; y < 8; y++) {
+                        for(int x = 0; x < 8; x++) {
+                            Color clr = bitmap.getColor(x, y);
+                            int clrr = Color.rgb(clr.red(), clr.green(), clr.blue());
+                            View wr = linearLayout.getChildAt(y);
+                            TableRow tr = (TableRow)wr;
+                            View vv = tr.getChildAt(x);
+                            if(!(vv instanceof TextView)) continue;
+                            TextView tvv = (TextView) vv;
+                            tvv.setBackgroundColor(clrr);
+                        }
+                    }
+                }
+                //utils.showSnackbar(String.valueOf(bitmap.getWidth()) + "," + String.valueOf(bitmap.getHeight()));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
