@@ -127,7 +127,7 @@
         app:layout_constraintVertical_bias="0.148" />
 
     <SeekBar
-        android:id="@+id/seekBarG"
+        android:id="@+id/seekBarB"
         android:layout_width="208dp"
         android:layout_height="58dp"
         android:layout_marginBottom="16dp"
@@ -141,7 +141,7 @@
         app:layout_constraintVertical_bias="0.328" />
 
     <SeekBar
-        android:id="@+id/seekBarB"
+        android:id="@+id/seekBarG"
         android:layout_width="208dp"
         android:layout_height="58dp"
         android:layout_marginBottom="16dp"

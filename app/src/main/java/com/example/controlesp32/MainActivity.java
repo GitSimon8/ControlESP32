@@ -137,6 +137,19 @@ public class MainActivity extends AppCompatActivity {
 
         //if(1 == 1) return;
 
+        Button upload = (Button)findViewById(R.id.buttonUploadImage);
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                //startActivityForResult(intent, 1);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
+                //registerForActivityResult(Intent.createChooser(intent, "Select Picture"), 1);
+            }
+        });
+
+
         Button save = (Button)findViewById(R.id.buttonSave);
         Button apply = (Button)findViewById(R.id.buttonApply);
         Button del = (Button)findViewById(R.id.buttonSaveDelete);
@@ -330,11 +343,6 @@ public class MainActivity extends AppCompatActivity {
                         curImg = 0;
                 }
                 editText.setText(imgs.get(curImg).toString().replace(".json",""));
-                //Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                //intent.setType("image/*");
-                //startActivityForResult(intent, 1);
-                //startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
-                //registerForActivityResult(Intent.createChooser(intent, "Select Picture"), 1);
             }
         });
 
@@ -354,11 +362,6 @@ public class MainActivity extends AppCompatActivity {
                         curImg = imgs.size()-1;
                 }
                 editText.setText(imgs.get(curImg).toString().replace(".json",""));
-                //Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                //intent.setType("image/*");
-                //startActivityForResult(intent, 1);
-                //startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
-                //registerForActivityResult(Intent.createChooser(intent, "Select Picture"), 1);
             }
         });
 
@@ -372,7 +375,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             String readd = utils.readFileData(fName);
             currentColor = Integer.parseInt(readd);
-
         }
         twww.setText(utils.readFileData(fName));
 
@@ -464,7 +466,7 @@ public class MainActivity extends AppCompatActivity {
                 tv.setHeight(size);
                 tv.setWidth(size);
                 tv.setBackgroundColor(Color.rgb(0,0,0));
-               tv.setOnTouchListener(new View.OnTouchListener() {
+                tv.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
                         if(!(v instanceof TextView)) return false;
@@ -475,6 +477,8 @@ public class MainActivity extends AppCompatActivity {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                                 w.setBackgroundColor(currentColor);
+                                //MAYBE SEND COLOR DATA TO ARDUINO
+
                                 break;
                             case MotionEvent.ACTION_MOVE:
                                 twww.setText("moving " + event.getRawX() + ","+event.getRawY());
