@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PointF;
+import android.graphics.RectF;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.JsonReader;
@@ -168,6 +170,12 @@ public class Utilities {
 
     public String[] getFiles() {
         return context.fileList();
+    }
+
+    public boolean isPointInRect(PointF pointF, RectF rectF) {
+        if(pointF.x>=rectF.left && pointF.x<=rectF.right && pointF.y >= rectF.top && pointF.y <= rectF.bottom)
+            return true;
+        return false;
     }
 
     public ArrayList<String> getFilesArrayList() {

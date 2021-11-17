@@ -18,6 +18,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ColorSpace;
 import android.graphics.Point;
+import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -43,6 +46,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -484,6 +489,7 @@ public class MainActivity extends AppCompatActivity {
                 tv.setWidth(size);
                 tv.setBackgroundColor(Color.rgb(0,0,0));
                 tv.setOnTouchListener(new View.OnTouchListener() {
+                    @SuppressLint("ClickableViewAccessibility")
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
                         if(!(v instanceof TextView)) return false;
@@ -491,14 +497,16 @@ public class MainActivity extends AppCompatActivity {
                         int y = (int) event.getY();
                         TextView w = (TextView)v;
                         TableLayout linearLayout =  (TableLayout) findViewById(R.id.tableLayoutt);
+
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                                 w.setBackgroundColor(currentColor);
                                 //MAYBE SEND COLOR DATA TO ARDUINO
-
+                                twww.setText("pos " + tv.getX() + "    :      "+tr .getY());
                                 break;
                             case MotionEvent.ACTION_MOVE:
-                                twww.setText("moving " + event.getRawX() + ","+event.getRawY());
+                                twww.setText("moving " + event.getX() + ","+event.getY());
+                               // twww.setText("moving " + tv.getX() + ","+tv.getY());
                                 break;
                             case MotionEvent.ACTION_UP:
                                 break;
