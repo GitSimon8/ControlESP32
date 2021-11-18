@@ -1,22 +1,14 @@
 package com.example.controlesp32;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Environment;
-import android.util.DisplayMetrics;
-import android.util.JsonReader;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TableRow;
-import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -28,21 +20,16 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Map;
 
 public class Utilities {
@@ -83,9 +70,8 @@ public class Utilities {
         URL url = new URL(requestedURL);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
+        con.setRequestProperty("Content-Type", "application/json"); //text/html
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer content = new StringBuffer();
         while ((inputLine = in.readLine()) != null) {
@@ -95,6 +81,30 @@ public class Utilities {
 
         con.disconnect();
         return content.toString();
+    }
+
+    public void doHttpGETRequest2(String requestedURL) throws IOException {
+        URL url = new URL(requestedURL);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/json"); //text/html
+        con.getInputStream();
+        con.disconnect();
+    }
+
+    public int getLedNumber(int row, int column) {
+        ArrayList<Integer> unevenRowList = new ArrayList<>();
+        unevenRowList.add(0);
+        unevenRowList.add(2);
+        unevenRowList.add(4);
+        unevenRowList.add(6);
+
+        if(unevenRowList.contains(row)) {
+            int newCol = 7-column;
+            return row*8+newCol;
+        } else {
+            return row*8+column;
+        }
     }
 
     private String getParamsString(Map<String, String> params)

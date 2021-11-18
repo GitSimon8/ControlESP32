@@ -1,33 +1,16 @@
 package com.example.controlesp32;
 
-import androidx.activity.result.ActivityResultRegistry;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.ColorSpace;
-import android.graphics.Point;
-import android.graphics.PointF;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.StrictMode;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,37 +21,19 @@ import android.widget.SeekBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public int currentColor = Color.rgb(0, 0, 0);
@@ -143,19 +108,6 @@ public class MainActivity extends AppCompatActivity {
         EditText editText = (EditText)findViewById(R.id.editTextTextPersonName);
 
         //StrictMode.setThreadPolicy(policy);
-        Thread thread = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try  {
-                    //utils.showSnackbar(utils.doHttpRequest("https://api.thecatapi.com/v1/images/search"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        thread.start();
 
         //if(1 == 1) return;
 
@@ -340,6 +292,24 @@ public class MainActivity extends AppCompatActivity {
                             if(!(vv instanceof TextView)) continue;
                             TextView tvv = (TextView) vv;
                             tvv.setBackgroundColor(clr);
+                            /*new Thread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    try {
+                                        utils.doHttpGETRequest2("http://192.168.178.41/" + ((TextView) tvv).getText().toString() + "," + clr);
+                                    } catch (IOException e) {
+                                        //utils.showSnackbar(e.toString());
+                                        e.printStackTrace();
+                                        Log.i("Eror", e.toString());
+                                    }
+                                    try {
+                                        wait(500);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).start();*/
                         }
                     }
 
@@ -478,29 +448,45 @@ public class MainActivity extends AppCompatActivity {
 
         int size = Math.round(utils.getPXfromDP(37.5f)); //37.5f bei 8 columns
 
-        for(int w = 0; w < linearLayout.getChildCount(); w++) {
-            View wr = linearLayout.getChildAt(w);
+        for(int y = 0; y < linearLayout.getChildCount(); y++) {
+            View wr = linearLayout.getChildAt(y);
             if(!(wr instanceof TableRow))
                 continue;
             TableRow tr = (TableRow)wr;
-            for(int i = 0; i < 8; i++) { //16 columns
+            for(int x = 0; x < 8; x++) { //16 columns
                 TextView tv = new TextView(this);
                 tv.setHeight(size);
                 tv.setWidth(size);
                 tv.setBackgroundColor(Color.rgb(0,0,0));
+                //String ledNumberString = "";
+                //((TextView) tv).setText(String.valueOf(y*8+x));
+                tv.setText(String.valueOf(utils.getLedNumber(y, x)));
+                ((TextView) tv).setTextColor(Color.argb(0, 0,0,0));
                 tv.setOnTouchListener(new View.OnTouchListener() {
                     @SuppressLint("ClickableViewAccessibility")
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
                         if(!(v instanceof TextView)) return false;
-                        int x = (int) event.getX();
-                        int y = (int) event.getY();
+                        //int x = (int) event.getX();
+                        //int y = (int) event.getY();
                         TextView w = (TextView)v;
                         TableLayout linearLayout =  (TableLayout) findViewById(R.id.tableLayoutt);
-
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                                 w.setBackgroundColor(currentColor);
+                                new Thread(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            utils.doHttpGETRequest2("http://192.168.178.41/" + ((TextView) v).getText().toString() + "," + currentColor);
+                                        } catch (IOException e) {
+                                            //utils.showSnackbar(e.toString());
+                                            e.printStackTrace();
+                                            Log.i("Eror", e.toString());
+                                        }
+                                    }
+                                }).start();
                                 //MAYBE SEND COLOR DATA TO ARDUINO
                                 twww.setText("pos " + tv.getX() + "    :      "+tr .getY());
                                 break;
