@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
             //Now you can do whatever you want with your inpustream, save it as file, upload to a server, decode a bitmap...
         }
     }
+    boolean pickUpColor = false;
     int curImg = 0;
     @SuppressLint("NewApi")
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -292,6 +293,11 @@ public class MainActivity extends AppCompatActivity {
                             if(!(vv instanceof TextView)) continue;
                             TextView tvv = (TextView) vv;
                             tvv.setBackgroundColor(clr);
+
+                            //SEND BIG GET REQUEST WITH ALL PIXEL COLORS
+                            //OR DO POST REQUEST WITH JSON
+                            //--- "UPLOAD" / SEND ALL DATA TO ESP32
+
                             /*new Thread(new Runnable() {
 
                                 @Override
@@ -376,6 +382,13 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout colorShow = (LinearLayout)findViewById(R.id.colorSHow);
         colorShow.setBackgroundColor(currentColor);
         Button fillBackgroundButton = (Button)findViewById(R.id.fillBackgroundButton);
+
+        colorShow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickUpColor = true;
+            }
+        });
 
         fillBackgroundButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -473,6 +486,20 @@ public class MainActivity extends AppCompatActivity {
                         TableLayout linearLayout =  (TableLayout) findViewById(R.id.tableLayoutt);
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
+                                if(pickUpColor) {
+                                    if (w.getBackground() instanceof ColorDrawable) {
+                                        ColorDrawable cd = (ColorDrawable) w.getBackground();
+                                        int colorCode = cd.getColor();
+                                        currentColor = colorCode;
+                                        r.setProgress(Color.red(currentColor));
+                                        g.setProgress(Color.green(currentColor));
+                                        b.setProgress(Color.blue(currentColor));
+                                        colorShow.setBackgroundColor(currentColor);
+                                        pickUpColor = false;
+                                    }
+
+                                    return true;
+                                }
                                 w.setBackgroundColor(currentColor);
                                 new Thread(new Runnable() {
 
