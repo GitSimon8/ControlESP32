@@ -505,11 +505,9 @@ public class MainActivity extends AppCompatActivity {
         });*/
 int lX = 59;
 int lY = 665;
-ArrayList<Rect> rectssssNEW = new ArrayList<>();
-        ArrayList<Point> textVIEWSSPos = new ArrayList<>();
-
         int size = Math.round(utils.getPXfromDP(37.5f)); //37.5f bei 8 columns
         HashMap<Rect, TextView> rectsTextView = new HashMap<>();
+        HashMap<TextView, Integer> textViewLastColorSent = new HashMap<>();
         for (int y = 0; y < linearLayout.getChildCount(); y++) {
             View wr = linearLayout.getChildAt(y);
             if (!(wr instanceof TableRow))
@@ -523,7 +521,7 @@ ArrayList<Rect> rectssssNEW = new ArrayList<>();
                 tv.post(new Runnable() {
                     @Override
                     public void run() {
-                        textVIEWSSPos.add(new Point((int)tv.getX(), (int)tv.getY()));
+                        //textVIEWSSPos.add(new Point((int)tv.getX(), (int)tv.getY()));
                         //Log.i("POS: ", new Point((int)tv.getX(), (int)tv.getY()).toString());
                         int[] location = new int[2];
                         tv.getLocationOnScreen(location);
@@ -541,6 +539,7 @@ ArrayList<Rect> rectssssNEW = new ArrayList<>();
                 Rect boxRect = new Rect(x*75, y*75, x*75+75, y*75+75);
                 rectsTextView.put(boxRect, tv);
                 ((TextView) tv).setTextColor(Color.argb(0, 0, 0, 0));
+                textViewLastColorSent.put(tv, Color.rgb(0, 0, 0));
                 tv.setOnTouchListener(new View.OnTouchListener() {
                     @SuppressLint("ClickableViewAccessibility")
                     @Override
@@ -565,19 +564,13 @@ ArrayList<Rect> rectssssNEW = new ArrayList<>();
                                     return true;
                                 }
                                 w.setBackgroundColor(currentColor);
-                                /*new Thread(new Runnable() {
+                                new Thread(new Runnable() {
 
                                     @Override
                                     public void run() {
-                                        try {
-                                            utils.doHttpGETRequest2("http://192.168.178.41/" + ((TextView) v).getText().toString() + "," + currentColor);
-                                        } catch (IOException e) {
-                                            //utils.showSnackbar(e.toString());
-                                            e.printStackTrace();
-                                            Log.i("Eror", e.toString());
-                                        }
+                                        //utils.doHttpGETRequest2("http://192.168.178.41/" + ((TextView) v).getText().toString() + "," + currentColor);
                                     }
-                                }).start();*/
+                                }).start();
                                 //MAYBE SEND COLOR DATA TO ARDUINO
                                 //twww.setText("click " + (int)event.getRawX() + "," + (int)event.getRawY());
                                 //twww.setText("pos " + tv.getX() + "    :      " + tr.getY());
@@ -589,7 +582,26 @@ ArrayList<Rect> rectssssNEW = new ArrayList<>();
                                 Point curPos = new Point((int)event.getRawX(), (int)event.getRawY()-diffY);
                                for(Map.Entry<Rect, TextView> allRects : rectsTextView.entrySet()) {
                                     if(allRects.getKey().contains(curPos.x, curPos.y)) {
-                                        allRects.getValue().setBackgroundColor(currentColor);
+                                        if(textViewLastColorSent.get(allRects.getValue()) != currentColor) {
+                                            textViewLastColorSent.replace(allRects.getValue(), currentColor);
+                                            //textViewLastColorSent.remove(allRects.getValue());
+                                            //textViewLastColorSent.put(allRects.getValue(), currentColor);
+                                            allRects.getValue().setBackgroundColor(currentColor);
+                                            new Thread(new Runnable() {
+
+                                                @Override
+                                                public void run() {
+                                                    try {
+                                                        utils.doHttpGETRequest2("http://192.168.178.41/" + allRects.getValue().getText().toString() + "," + currentColor);
+                                                    } catch (IOException e) {
+                                                        //utils.showSnackbar(e.toString());
+                                                        e.printStackTrace();
+                                                        Log.i("Eror", e.toString());
+                                                    }
+                                                }
+                                            }).start();
+                                        }
+
                                     }
                                 }
                                 break;
@@ -603,9 +615,6 @@ ArrayList<Rect> rectssssNEW = new ArrayList<>();
                 });
                 tr.addView(tv);
             }
-        }
-        for(Point p : textVIEWSSPos) {
-
         }
     }
 }
