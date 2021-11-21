@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,6 +40,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public int currentColor = Color.rgb(0, 0, 0);
@@ -47,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void onProgessChanged(SeekBar sb, int progess, boolean fromUser) {
         LinearLayout colorShow = (LinearLayout) findViewById(R.id.colorSHow);
-        SeekBar r = (SeekBar) findViewById(R.id.seekBarR);
-        SeekBar g = (SeekBar) findViewById(R.id.seekBarG);
-        SeekBar b = (SeekBar) findViewById(R.id.seekBarB);
+        //SeekBar r = (SeekBar) findViewById(R.id.seekBarR);
+        //SeekBar g = (SeekBar) findViewById(R.id.seekBarG);
+        //SeekBar b = (SeekBar) findViewById(R.id.seekBarB);
 
-        currentColor = Color.rgb(r.getProgress(), g.getProgress(), b.getProgress());
+        //currentColor = Color.rgb(r.getProgress(), g.getProgress(), b.getProgress());
         colorShow.setBackgroundColor(currentColor);
         //okkk.setText("Clr: " + currentColor);
         utils.writeFileData(fName, String.valueOf(currentColor));
@@ -368,9 +372,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        SeekBar r = (SeekBar) findViewById(R.id.seekBarR);
-        SeekBar g = (SeekBar) findViewById(R.id.seekBarG);
-        SeekBar b = (SeekBar) findViewById(R.id.seekBarB);
+      //  SeekBar r = (SeekBar) findViewById(R.id.seekBarR);
+      //  SeekBar g = (SeekBar) findViewById(R.id.seekBarG);
+     //   SeekBar b = (SeekBar) findViewById(R.id.seekBarB);
 
         if (!utils.doesFileExist(fName)) {
             utils.showSnackbar("creating");
@@ -381,9 +385,9 @@ public class MainActivity extends AppCompatActivity {
         }
         twww.setText(utils.readFileData(fName));
 
-        r.setProgress(Color.red(currentColor));
-        g.setProgress(Color.green(currentColor));
-        b.setProgress(Color.blue(currentColor));
+        //r.setProgress(Color.red(currentColor));
+        //g.setProgress(Color.green(currentColor));
+       // b.setProgress(Color.blue(currentColor));
         LinearLayout colorShow = (LinearLayout) findViewById(R.id.colorSHow);
         colorShow.setBackgroundColor(currentColor);
         Button fillBackgroundButton = (Button) findViewById(R.id.fillBackgroundButton);
@@ -418,9 +422,9 @@ public class MainActivity extends AppCompatActivity {
             public void onColorPicked(int color, String hexVal) {
                 //Your code here
                 currentColor = color;
-                r.setProgress(Color.red(currentColor));
-                g.setProgress(Color.green(currentColor));
-                b.setProgress(Color.blue(currentColor));
+               // r.setProgress(Color.red(currentColor));
+               // g.setProgress(Color.green(currentColor));
+               // b.setProgress(Color.blue(currentColor));
                 colorShow.setBackgroundColor(currentColor);
                 twww.setText(String.valueOf(currentColor));
                 utils.writeFileData(fName, String.valueOf(currentColor));
@@ -446,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        r.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        /*r.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser)
@@ -498,10 +502,14 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
-        });
+        });*/
+int lX = 59;
+int lY = 665;
+ArrayList<Rect> rectssssNEW = new ArrayList<>();
+        ArrayList<Point> textVIEWSSPos = new ArrayList<>();
 
         int size = Math.round(utils.getPXfromDP(37.5f)); //37.5f bei 8 columns
-
+        HashMap<Rect, TextView> rectsTextView = new HashMap<>();
         for (int y = 0; y < linearLayout.getChildCount(); y++) {
             View wr = linearLayout.getChildAt(y);
             if (!(wr instanceof TableRow))
@@ -512,17 +520,32 @@ public class MainActivity extends AppCompatActivity {
                 tv.setHeight(size);
                 tv.setWidth(size);
                 tv.setBackgroundColor(Color.rgb(0, 0, 0));
+                tv.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        textVIEWSSPos.add(new Point((int)tv.getX(), (int)tv.getY()));
+                        //Log.i("POS: ", new Point((int)tv.getX(), (int)tv.getY()).toString());
+                        int[] location = new int[2];
+                        tv.getLocationOnScreen(location);
+                        int x = location[0];
+                        int y = location[1];
+                        int diffY = 827 - 665;
+                        Rect TVRECT = new Rect(x, y-diffY, x+75, y-diffY+75);
+                        rectsTextView.put(TVRECT, tv);
+                        //Log.i("POS: ", new Point(x, y-diffY).toString());
+                    }
+                });
                 //String ledNumberString = "";
                 //((TextView) tv).setText(String.valueOf(y*8+x));
                 tv.setText(String.valueOf(utils.getLedNumber(y, x)));
+                Rect boxRect = new Rect(x*75, y*75, x*75+75, y*75+75);
+                rectsTextView.put(boxRect, tv);
                 ((TextView) tv).setTextColor(Color.argb(0, 0, 0, 0));
                 tv.setOnTouchListener(new View.OnTouchListener() {
                     @SuppressLint("ClickableViewAccessibility")
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
                         if (!(v instanceof TextView)) return false;
-                        //int x = (int) event.getX();
-                        //int y = (int) event.getY();
                         TextView w = (TextView) v;
                         TableLayout linearLayout = (TableLayout) findViewById(R.id.tableLayoutt);
                         switch (event.getAction()) {
@@ -532,9 +555,9 @@ public class MainActivity extends AppCompatActivity {
                                         ColorDrawable cd = (ColorDrawable) w.getBackground();
                                         int colorCode = cd.getColor();
                                         currentColor = colorCode;
-                                        r.setProgress(Color.red(currentColor));
-                                        g.setProgress(Color.green(currentColor));
-                                        b.setProgress(Color.blue(currentColor));
+                                       // r.setProgress(Color.red(currentColor));
+                                       // g.setProgress(Color.green(currentColor));
+                                       // b.setProgress(Color.blue(currentColor));
                                         colorShow.setBackgroundColor(currentColor);
                                         pickUpColor = false;
                                     }
@@ -542,7 +565,7 @@ public class MainActivity extends AppCompatActivity {
                                     return true;
                                 }
                                 w.setBackgroundColor(currentColor);
-                                new Thread(new Runnable() {
+                                /*new Thread(new Runnable() {
 
                                     @Override
                                     public void run() {
@@ -554,15 +577,24 @@ public class MainActivity extends AppCompatActivity {
                                             Log.i("Eror", e.toString());
                                         }
                                     }
-                                }).start();
+                                }).start();*/
                                 //MAYBE SEND COLOR DATA TO ARDUINO
-                                twww.setText("pos " + tv.getX() + "    :      " + tr.getY());
+                                //twww.setText("click " + (int)event.getRawX() + "," + (int)event.getRawY());
+                                //twww.setText("pos " + tv.getX() + "    :      " + tr.getY());
                                 break;
                             case MotionEvent.ACTION_MOVE:
-                                twww.setText("moving " + event.getX() + "," + event.getY());
+                                int diffY = 827 - 665;
+                                twww.setText("moving " + (event.getRawX()-lX) + "," + (event.getRawY()-lY-160));
                                 // twww.setText("moving " + tv.getX() + ","+tv.getY());
+                                Point curPos = new Point((int)event.getRawX(), (int)event.getRawY()-diffY);
+                               for(Map.Entry<Rect, TextView> allRects : rectsTextView.entrySet()) {
+                                    if(allRects.getKey().contains(curPos.x, curPos.y)) {
+                                        allRects.getValue().setBackgroundColor(currentColor);
+                                    }
+                                }
                                 break;
                             case MotionEvent.ACTION_UP:
+                                //twww.setText("pos " + tv.getX() + "    :      " + tr.getY());
                                 break;
                         }
 
@@ -571,6 +603,9 @@ public class MainActivity extends AppCompatActivity {
                 });
                 tr.addView(tv);
             }
+        }
+        for(Point p : textVIEWSSPos) {
+
         }
     }
 }

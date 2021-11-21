@@ -112,7 +112,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.401" />
 
-    <SeekBar
+ <!--   <SeekBar
         android:id="@+id/seekBarR"
         android:layout_width="208dp"
         android:layout_height="58dp"
@@ -152,7 +152,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.24" />
-
+-->
     <LinearLayout
         android:id="@+id/colorSHow"
         android:layout_width="49dp"
